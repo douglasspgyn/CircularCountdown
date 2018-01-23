@@ -41,7 +41,7 @@ class CircularCountdown : FrameLayout {
         val TYPE_DAY: Long = 1000 * 60 * 60 * 24
     }
 
-    private var startTime: Long = 0
+    private var pastTime: Long = 0
     private var endTime: Long = 0
     private var progress: Long = 0
     private var isFirstTime = true
@@ -88,10 +88,15 @@ class CircularCountdown : FrameLayout {
         setProgressBackgroundColor(countdownBackgroundColor)
     }
 
-    fun create(startTime: Long, endTime: Long, timeType: Long, listener: OnCountdownFinish): CircularCountdown {
-        this.startTime = startTime
+    fun create(pastTime: Long, endTime: Long, timeType: Long): CircularCountdown {
+        this.pastTime = pastTime
         this.endTime = endTime
         this.timeType = timeType
+        setCustomProgress(pastTime, endTime)
+        return this
+    }
+
+    fun listener(listener: OnCountdownFinish? = null): CircularCountdown {
         this.listener = listener
         return this
     }
@@ -106,8 +111,8 @@ class CircularCountdown : FrameLayout {
         return this
     }
 
-    fun start() {
-        countdownTimer = object : CountDownTimer(if (isFirstTime) (endTime - startTime) * timeType else endTime * timeType, timeType) {
+    fun start(): CircularCountdown {
+        countdownTimer = object : CountDownTimer(if (isFirstTime) (endTime - pastTime) * timeType else endTime * timeType, timeType) {
             override fun onTick(millisUntilFinished: Long) {
                 onTimerTick()
             }
@@ -116,17 +121,19 @@ class CircularCountdown : FrameLayout {
                 onTimerFinish()
             }
         }.start()
+
+        return this
     }
 
     fun stop() {
         countdownTimer?.cancel()
     }
 
-    private fun setCustomProgress(startTime: Long, endTime: Long) {
+    private fun setCustomProgress(pastTime: Long, endTime: Long) {
         countdownProgress.max = endTime.toInt()
         countdownProgress.secondaryProgress = endTime.toInt()
-        countdownProgress.progress = startTime.toInt()
-        val elapsedTime = endTime - startTime
+        countdownProgress.progress = pastTime.toInt()
+        val elapsedTime = endTime - pastTime
         countdownText.text = elapsedTime.toInt().toString()
     }
 
@@ -150,7 +157,7 @@ class CircularCountdown : FrameLayout {
             }
             else -> {
                 if (isFirstTime) {
-                    progress = endTime - (endTime - startTime)
+                    progress = endTime - (endTime - pastTime)
                     isFirstTime = false
                 }
 
