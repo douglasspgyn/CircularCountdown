@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CircularCountdown">
+        <attr name="countdownTextSize" format="dimension"/>
+        <attr name="countdownTextColor" format="color"/>
+        <attr name="countdownForegroundColor" format="color"/>
+        <attr name="countdownBackgroundColor" format="color"/>
+    </declare-styleable>
+</resources>
