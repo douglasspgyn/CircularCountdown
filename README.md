@@ -9,6 +9,8 @@ A custom Progress Bar that looks like a Countdown.
 
 You can see a [Sample Project here](https://github.com/douglasspgyn/CircularCountdownSample) and learn more on the [Wiki](https://github.com/douglasspgyn/CircularCountdown/wiki).
 
+This lib was based on [another project](https://github.com/douglasspgyn/TheFinalCountDownProject).
+
 ![](https://i.imgur.com/7GOJjGv.gif)
 
 
