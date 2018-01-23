@@ -8,3 +8,22 @@
 A custom Progress Bar that looks like a Countdown.
 
 You can see a [Sample Project here](https://github.com/douglasspgyn/CircularCountdownSample) and learn more on the [Wiki](https://github.com/douglasspgyn/CircularCountdown/wiki).
+
+## Add to your project:
+
+You just need to add the Maven Jitpack repository on Project Gradle:
+```xml
+ allprojects {
+    repositories {
+      maven { url 'https://jitpack.io' }
+    }
+ }
+```
+
+and the library dependence on Module Gradle:
+
+```xml
+ dependencies {
+    compile 'com.github.douglasspgyn:CircularCountdown:0.1.0'
+ }
+```
