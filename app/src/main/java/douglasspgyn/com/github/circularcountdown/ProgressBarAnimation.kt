@@ -12,6 +12,6 @@ class ProgressBarAnimation(private val progressBar: CircularCountdown, private v
     override fun applyTransformation(interpolatedTime: Float, t: Transformation) {
         super.applyTransformation(interpolatedTime, t)
         val value = from + (to - from) * interpolatedTime
-        progressBar.setProgress(value.toInt())
+        progressBar.setProgress(value.toLong())
     }
 }

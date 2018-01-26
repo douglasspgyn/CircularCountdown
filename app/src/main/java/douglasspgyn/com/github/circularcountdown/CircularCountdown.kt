@@ -13,14 +13,14 @@ import android.util.Log
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.RotateAnimation
-import android.widget.FrameLayout
+import android.widget.RelativeLayout
 import kotlinx.android.synthetic.main.countdown_view.view.*
 
 /**
  * Created by Douglas on 23/01/18.
  */
 
-class CircularCountdown : FrameLayout {
+class CircularCountdown : RelativeLayout {
 
     constructor(context: Context) : super(context)
 
@@ -35,26 +35,32 @@ class CircularCountdown : FrameLayout {
     }
 
     companion object {
-        val TYPE_SECOND: Long = 1000
-        val TYPE_MINUTE: Long = 1000 * 60
-        val TYPE_HOUR: Long = 1000 * 60 * 60
-        val TYPE_DAY: Long = 1000 * 60 * 60 * 24
+        const val TYPE_SECOND: Int = 0
+        const val TYPE_MINUTE: Int = 1
+        const val TYPE_HOUR: Int = 2
+        const val TYPE_DAY: Int = 3
+
+        const val SECOND_CONVERTER: Long = 1000
+        const val MINUTE_CONVERTER: Long = 1000 * 60
+        const val HOUR_CONVERTER: Long = 1000 * 60 * 60
+        const val DAY_CONVERTER: Long = 1000 * 60 * 60 * 24
     }
 
     private var pastTime: Long = 0
     private var endTime: Long = 0
     private var progress: Long = 0
-    private var isFirstTime = true
+    private var elapsedTime: Long = 0
+        get() = endTime - progress
 
-    private var timeType: Long = TYPE_SECOND
+    private var timeConverter: Long = 0
     private var loop: Boolean = true
     private var cycleCount: Int = 0
     private var maxCycles: Int = -1
 
     private var countdownTimer: CountDownTimer? = null
-    private var listener: OnCountdownFinish? = null
+    private var listener: CircularListener? = null
 
-    private var countdownTextSize: Float = 14f
+    private var countdownTextSize: Float = context.resources.getDimension(R.dimen.circularCountdownTextSize)
     private var countdownTextColor: String = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.countDownText))
     private var countdownForegroundColor: String = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.countDownForeground))
     private var countdownBackgroundColor: String = "#" + Integer.toHexString(ContextCompat.getColor(context, R.color.countDownBackground))
@@ -88,15 +94,24 @@ class CircularCountdown : FrameLayout {
         setProgressBackgroundColor(countdownBackgroundColor)
     }
 
-    fun create(pastTime: Long, endTime: Long, timeType: Long): CircularCountdown {
-        this.pastTime = pastTime
-        this.endTime = endTime
-        this.timeType = timeType
-        setCustomProgress(pastTime, endTime)
+    fun create(pastTime: Int, endTime: Int, timeType: Int): CircularCountdown {
+        this.pastTime = pastTime.toLong()
+        this.endTime = endTime.toLong()
+        this.timeConverter = when (timeType) {
+            TYPE_SECOND -> SECOND_CONVERTER
+            TYPE_MINUTE -> MINUTE_CONVERTER
+            TYPE_HOUR -> HOUR_CONVERTER
+            TYPE_DAY -> DAY_CONVERTER
+            else -> SECOND_CONVERTER
+        }
+
+        progress = this.pastTime
+        setProgressBar()
+
         return this
     }
 
-    fun listener(listener: OnCountdownFinish? = null): CircularCountdown {
+    fun listener(listener: CircularListener? = null): CircularCountdown {
         this.listener = listener
         return this
     }
@@ -112,15 +127,13 @@ class CircularCountdown : FrameLayout {
     }
 
     fun start(): CircularCountdown {
-        countdownTimer = object : CountDownTimer(if (isFirstTime) (endTime - pastTime) * timeType else endTime * timeType, timeType) {
-            override fun onTick(millisUntilFinished: Long) {
-                onTimerTick()
-            }
+        val duration = if (endTime > pastTime) {
+            (endTime - pastTime)
+        } else {
+            1
+        }
 
-            override fun onFinish() {
-                onTimerFinish()
-            }
-        }.start()
+        startCountdown(duration)
 
         return this
     }
@@ -129,42 +142,50 @@ class CircularCountdown : FrameLayout {
         countdownTimer?.cancel()
     }
 
-    private fun setCustomProgress(pastTime: Long, endTime: Long) {
+    private fun startCountdown(duration: Long) {
+        countdownTimer = object : CountDownTimer(duration * timeConverter, timeConverter) {
+            override fun onTick(millisUntilFinished: Long) {
+                onTimerTick()
+            }
+
+            override fun onFinish() {
+                onTimerFinish()
+            }
+        }.start()
+    }
+
+    private fun setProgressBar() {
         countdownProgress.max = endTime.toInt()
         countdownProgress.secondaryProgress = endTime.toInt()
-        countdownProgress.progress = pastTime.toInt()
-        val elapsedTime = endTime - pastTime
+        countdownProgress.progress = progress.toInt()
         countdownText.text = elapsedTime.toInt().toString()
     }
 
-    fun setProgress(value: Int) {
-        countdownProgress.progress = value
+    fun setProgress(value: Long) {
+        countdownProgress.progress = value.toInt()
     }
 
     private fun onTimerTick() {
         when {
-            progress == endTime - 1 -> {
+            progress == endTime -> {
                 countdownText.text = "0"
-                setCustomProgress(progress, endTime)
-                progress += 1
+                setProgress(progress)
             }
             progress > endTime -> {
-                countdownText.text = (endTime - 1).toString()
+                progress = 1
                 val anim = ProgressBarAnimation(this, endTime.toFloat(), 1.toFloat())
                 anim.duration = 500
                 startAnimation(anim)
-                progress = 2
+                countdownText.text = elapsedTime.toInt().toString()
             }
             else -> {
-                if (isFirstTime) {
-                    progress = endTime - (endTime - pastTime)
-                    isFirstTime = false
-                }
-
-                setCustomProgress(progress, endTime)
-                progress += 1
+                setProgress(progress)
+                countdownText.text = elapsedTime.toInt().toString()
             }
         }
+
+        listener?.onTick(progress.toInt())
+        progress++
     }
 
     private fun onTimerFinish() {
@@ -175,10 +196,10 @@ class CircularCountdown : FrameLayout {
         }
 
         if (loop) {
-            start()
+            startCountdown(endTime)
         } else {
             countdownText.text = "0"
-            setCustomProgress(endTime, endTime)
+            setProgress(endTime)
             stop()
         }
 
