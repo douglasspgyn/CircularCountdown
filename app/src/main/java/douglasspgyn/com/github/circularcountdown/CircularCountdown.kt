@@ -14,6 +14,7 @@ import android.view.View
 import android.view.animation.Animation
 import android.view.animation.RotateAnimation
 import android.widget.RelativeLayout
+import douglasspgyn.com.github.circularcountdown.listener.CircularListener
 import kotlinx.android.synthetic.main.countdown_view.view.*
 
 /**
