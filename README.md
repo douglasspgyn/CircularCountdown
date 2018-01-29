@@ -29,6 +29,6 @@ and the library dependence on Module Gradle:
 
 ```xml
  dependencies {
-    compile 'com.github.douglasspgyn:CircularCountdown:0.1.0'
+    compile 'com.github.douglasspgyn:CircularCountdown:0.3.0'
  }
 ```
