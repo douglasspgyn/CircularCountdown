@@ -56,6 +56,7 @@ class CircularCountdown : RelativeLayout {
     private var loop: Boolean = true
     private var cycleCount: Int = 0
     private var maxCycles: Int = -1
+    private var running: Boolean = false
 
     private var countdownTimer: CountDownTimer? = null
     private var listener: CircularListener? = null
@@ -127,18 +128,22 @@ class CircularCountdown : RelativeLayout {
     }
 
     fun start(): CircularCountdown {
+        stop()
+
         val duration = if (endTime > pastTime) {
             (endTime - pastTime)
         } else {
             1
         }
 
+        running = true
         startCountdown(duration)
 
         return this
     }
 
     fun stop() {
+        running = false
         countdownTimer?.cancel()
     }
 
@@ -261,4 +266,6 @@ class CircularCountdown : RelativeLayout {
     }
 
     fun getMaxCycles(): Int = maxCycles
+
+    fun isRunning(): Boolean = running
 }
