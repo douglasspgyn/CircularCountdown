@@ -11,7 +11,7 @@ You can see a [Sample Project here](https://github.com/douglasspgyn/CircularCoun
 
 This lib was based on [another project](https://github.com/douglasspgyn/TheFinalCountDownProject).
 
-![](https://i.imgur.com/7GOJjGv.gif)
+![](https://i.imgur.com/GQS4Qko.gif)
 
 
 ## Add to your project:
