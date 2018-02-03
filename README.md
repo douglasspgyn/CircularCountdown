@@ -13,6 +13,50 @@ This lib was based on [another project](https://github.com/douglasspgyn/TheFinal
 
 ![](https://i.imgur.com/GQS4Qko.gif)
 
+## XML
+
+```xml
+<douglasspgyn.com.github.circularcountdown.CircularCountdown
+                android:id="@+id/circularCountdown"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                app:countdownBackgroundColor="@color/colorAccent"
+                app:countdownForegroundColor="@color/colorPrimary"
+                app:countdownTextColor="@color/colorPrimaryDark"
+                app:countdownTextSize="24sp" />
+```
+
+## Circular Countdown
+
+```kotlin
+circularCountdown.create(3, 10, CircularCountdown.TYPE_SECOND)
+                .listener(object : CircularListener{
+                    override fun onTick(progress: Int) {
+
+                    }
+                    
+                    override fun onFinish(newCycle: Boolean, cycleCount: Int) {
+                        
+                    }
+                })
+                .start()
+```
+
+## Circular Cascade Countdown
+
+```kotlin
+CircularCascadeCountdown(86405000,
+                circularCountdownSeconds,
+                circularCountdownMinutes,
+                circularCountdownHours,
+                circularCountdownDays)
+                .listener(object : CascadeListener {
+                    override fun onFinish() {
+                        
+                    }
+                })
+                .start()
+```
 
 ## Add to your project:
 
